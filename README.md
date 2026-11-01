@@ -1,180 +1,139 @@
-# Risk Monitoring Project in Python
+# Risk Monitoring in Python
 
-A portfolio-ready **risk monitoring and transaction alerting project** built with Python and fully synthetic data.
+A simple transaction risk-monitoring project built with Python.
 
-The project simulates a simplified fraud / operational-risk monitoring workflow:
+The project generates synthetic transaction data, applies a set of configurable risk rules, assigns a risk score to each transaction, and creates alerts for transactions that may require review.
 
-1. Generate fake transaction and customer-risk data.
-2. Apply transparent, rule-based risk scoring.
-3. Assign Low, Medium, High, or Critical risk levels.
-4. Record the reasons that caused each alert.
-5. Export alerts for investigation.
-6. Review results in a Streamlit dashboard.
-7. Run automated tests through GitHub Actions.
+I built this project to explore how rule-based transaction monitoring can be implemented in Python while keeping the scoring logic easy to understand and modify.
 
-> **Important:** This repository uses synthetic data only. It is an educational portfolio project and is not a production fraud-detection, AML, KYC, or regulatory compliance system.
+## What it does
 
-## Why this project is useful
-
-This project demonstrates practical skills in:
-
-- Python
-- Pandas
-- NumPy
-- Risk monitoring
-- Rule-based alert generation
-- Transaction monitoring
-- Data analysis
-- Data quality checks
-- Explainable risk scoring
-- CSV reporting
-- Streamlit dashboards
-- Unit testing with pytest
-- Git / GitHub
-- GitHub Actions CI
-
-## Project structure
+The workflow is straightforward:
 
 ```text
-risk-monitoring-python/
-├── .github/
-│   └── workflows/
-│       └── python-tests.yml
-├── config/
-│   └── risk_rules.json
-├── data/
-│   └── README.md
-├── outputs/
-│   └── .gitkeep
-├── src/
-│   ├── __init__.py
-│   ├── generate_data.py
-│   ├── main.py
-│   └── risk_engine.py
-├── tests/
-│   └── test_risk_engine.py
-├── .gitignore
-├── CONTRIBUTING.md
-├── LICENSE
-├── README.md
-└── requirements.txt
+Synthetic transactions
+        ↓
+Data validation
+        ↓
+Risk rules
+        ↓
+Risk score
+        ↓
+Risk classification
+        ↓
+Alerts and reports
 ```
 
-## Risk model
+The project checks transactions for signals such as:
 
-The model is intentionally simple and explainable.
+- unusually high transaction amounts
+- high customer/KYC risk
+- repeated failed logins
+- previous chargebacks
+- large changes in IP location
+- new payees
+- high transaction frequency
+- recently created accounts
 
-Example risk signals include:
+Each triggered rule adds points to the transaction's risk score.
 
-- High transaction amount
-- High KYC/customer-risk level
-- Multiple failed logins
-- Previous chargebacks
-- Large IP-location change
-- New payee
-- High transaction velocity
-- Very new account
-- Synthetic high-risk geography marker
+## Risk levels
 
-Each condition adds points to the transaction's risk score.
-
-### Risk levels
-
-| Score | Risk level |
+| Score | Level |
 |---:|---|
-| 0-24 | Low |
-| 25-49 | Medium |
-| 50-74 | High |
+| 0–24 | Low |
+| 25–49 | Medium |
+| 50–74 | High |
 | 75+ | Critical |
 
-The exact thresholds and weights are stored in:
+The scoring thresholds and rule weights can be changed in:
 
 ```text
 config/risk_rules.json
 ```
 
-That makes the rules easy to change without rewriting the scoring logic.
+This keeps the risk logic configurable instead of hard-coding every value in the Python scripts.
 
-## Example output
-
-The alert file contains fields such as:
+## Project structure
 
 ```text
-transaction_id
-customer_id
-timestamp
-amount
-country
-risk_score
-risk_level
-risk_reasons
-```
-
-Example:
-
-```text
-TXN000123,CUST0042,2026-10-20 12:15:00,42000.00,Country-A,65,High,"High amount | High KYC risk | New payee"
+risk-monitoring-python/
+│
+├── config/
+│   └── risk_rules.json
+│
+├── data/
+│   └── README.md
+│
+├── outputs/
+│
+├── src/
+│   ├── __init__.py
+│   ├── generate_data.py
+│   ├── main.py
+│   └── risk_engine.py
+│
+├── tests/
+│   └── test_risk_engine.py
+│
+├── dashboard.py
+├── requirements.txt
+├── .gitignore
+└── README.md
 ```
 
 ## Setup
 
-### 1. Clone the repository
+Clone the repository:
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/risk-monitoring-python.git
-cd risk-monitoring-python
+git clone https://github.com/thelkotolsantosh/risk-monitoring-python-.git
+cd risk-monitoring-python-
 ```
 
-### 2. Create a virtual environment
+Create a virtual environment:
 
-Windows PowerShell:
+```bash
+python -m venv .venv
+```
+
+On Windows PowerShell:
 
 ```powershell
-python -m venv .venv
 .venv\Scripts\Activate.ps1
 ```
 
-Windows Command Prompt:
-
-```cmd
-python -m venv .venv
-.venv\Scripts\activate
-```
-
-macOS / Linux:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-### 3. Install dependencies
+Install the dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Run the project
+## Generate sample data
 
-### Step 1: Generate synthetic data
+Run:
 
 ```bash
 python -m src.generate_data
 ```
 
-This creates:
+This generates a synthetic transaction dataset at:
 
 ```text
 data/transactions.csv
 ```
 
-### Step 2: Run risk monitoring
+The dataset contains fields such as transaction amount, customer risk level, failed login attempts, transaction frequency, account age, country, and payee status.
+
+No real customer or financial data is used.
+
+## Run the risk monitor
 
 ```bash
 python -m src.main
 ```
 
-This creates:
+The script scores each transaction and creates:
 
 ```text
 outputs/scored_transactions.csv
@@ -182,86 +141,72 @@ outputs/risk_alerts.csv
 outputs/risk_summary.csv
 ```
 
-### Step 3: Run the dashboard
+### Example
+
+A transaction could trigger:
+
+```text
+Amount: 42,000
+KYC Risk: High
+New Payee: Yes
+```
+
+and produce:
+
+```text
+Risk Score: 55
+Risk Level: High
+
+Reasons:
+High transaction amount
+High KYC risk
+New payee
+```
+
+I included the reasons behind each score so that flagged transactions are explainable rather than just returning a number.
+
+## Dashboard
+
+The project also includes a small Streamlit dashboard.
+
+Start it with:
 
 ```bash
 streamlit run dashboard.py
 ```
 
-Streamlit will display a local URL, normally:
+The dashboard shows:
 
-```text
-http://localhost:8501
-```
+- number of transactions processed
+- High and Critical alerts
+- risk-level distribution
+- highest-scoring transactions
+- risk levels by transaction channel
 
-## Run tests
+## Tests
+
+Run the tests with:
 
 ```bash
 pytest
 ```
 
-The GitHub Actions workflow also runs the tests automatically whenever code is pushed to GitHub.
+The tests cover the main scoring and classification logic.
 
-## How the scoring works
+## Tools used
 
-The risk engine returns two important outputs:
+- Python
+- Pandas
+- NumPy
+- Streamlit
+- Pytest
 
-1. `risk_score`
-2. `risk_reasons`
+## Note
 
-For example:
+This is a learning project built with synthetic data. The rules and thresholds are simplified for demonstration purposes and should not be treated as a production fraud, AML, KYC, or financial-risk decisioning system.
 
-```text
-risk_score = 55
-risk_reasons = "High transaction amount | Multiple failed logins | New payee"
-```
+---
 
-This is useful because an analyst can see not only that a transaction was flagged, but also **why** it was flagged.
+**Santosh Thelkotlol**
 
-## Portfolio / interview explanation
-
-You can explain the project like this:
-
-> I built a Python-based transaction risk monitoring project using synthetic data. I created configurable risk rules for transaction amount, KYC risk, login behaviour, chargeback history, geographic anomalies, payee status, transaction velocity, and account age. The system calculates an explainable risk score, assigns a severity level, exports investigation alerts, and displays monitoring results in a Streamlit dashboard. I also added pytest tests and GitHub Actions for automated quality checks.
-
-## Suggested GitHub repository description
-
-```text
-Python risk monitoring project using synthetic transaction data, configurable risk rules, explainable scoring, alert generation, Streamlit dashboard, pytest, and GitHub Actions.
-```
-
-## Suggested GitHub topics
-
-```text
-python
-risk-monitoring
-fraud-detection
-transaction-monitoring
-data-analysis
-pandas
-streamlit
-risk-management
-compliance
-portfolio-project
-```
-
-## Possible future improvements
-
-- Add SQL / SQLite storage
-- Add Power BI export
-- Add investigation case status
-- Add customer-level risk aggregation
-- Add alert deduplication
-- Add machine-learning anomaly detection
-- Add time-series trend monitoring
-- Add email or Slack-style alert simulation
-- Add REST API with FastAPI
-- Add Docker support
-
-## Disclaimer
-
-This is an educational project using synthetic data. It should not be used as a real fraud, AML, KYC, financial-crime, credit-risk, or regulatory decisioning system without appropriate governance, validation, security, legal review, and domain-specific controls.
-
-## License
-
-MIT License
+[GitHub Profile](https://github.com/thelkotolsantosh)
