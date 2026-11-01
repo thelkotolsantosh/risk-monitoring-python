@@ -1,0 +1,32 @@
+{
+  "risk_thresholds": {
+    "medium": 25,
+    "high": 50,
+    "critical": 75
+  },
+  "limits": {
+    "high_amount": 25000,
+    "failed_logins": 3,
+    "chargeback_history": 2,
+    "ip_distance_km": 1000,
+    "velocity_1h": 5,
+    "velocity_24h": 15,
+    "new_account_days": 30
+  },
+  "weights": {
+    "high_amount": 20,
+    "high_kyc_risk": 25,
+    "failed_logins": 10,
+    "chargeback_history": 15,
+    "large_ip_distance": 10,
+    "new_payee": 10,
+    "high_velocity_1h": 10,
+    "high_velocity_24h": 10,
+    "new_account": 5,
+    "synthetic_high_risk_country": 15
+  },
+  "synthetic_high_risk_countries": [
+    "HighRisk-A",
+    "HighRisk-B"
+  ]
+}
